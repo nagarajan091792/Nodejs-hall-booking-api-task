@@ -72,7 +72,7 @@ try {
                  "end": req.body.end,
                  "status": "confirmed"
              };
-             bookingDetails.push(booking);
+             myHall.bookingDetails.push(booking);
              res.status(200).json({
             message: "room booked successfully",
              });
