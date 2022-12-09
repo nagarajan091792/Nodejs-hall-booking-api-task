@@ -70,7 +70,7 @@ hall.post("/bookRoom", (req, res) => {
             return res.status(400).send({ error: "Invalid" });
         } else {
             let booking = {
-                "customerName": req.body.name,
+                "customerName": req.body.customerName,
                 "date": new Date(req.body.date),
                 "start": req.body.start,
                 "end": req.body.end,
