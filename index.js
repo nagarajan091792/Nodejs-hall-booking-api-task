@@ -64,7 +64,7 @@ hall.post("/createroom", function (req, res) {
 
 // booking a room - api
 hall.post("/bookRoom", (req, res) => {
-    for (let i = 0; i < rooms.length; i++) {
+    for (let i = 0; i <= rooms.length; i++) {
 
         if (!(rooms[i].roomId == req.body.roomId)) {
             return res.status(400).send({ error: "Invalid" });
