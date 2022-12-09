@@ -97,7 +97,7 @@ hall.post("/bookRoom", (req, res) => {
                     .send({ error: "Please select different time slot" });
         }
     }
-});git
+});
 
 
 // list all rooms with booked data - api
