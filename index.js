@@ -39,7 +39,7 @@ const rooms = [
 ];
 
 
-hall.get("/", function (req, res) {
+hall.get("/all", function (req, res) {
     res.json(rooms);
 });
 
@@ -140,6 +140,8 @@ hall.get("/listAllCustomers", (req, res) => {
 
     res.send(customerArray);
 });
-
+as.get("/", (req, res) =>
+  res.send(`Server Active`)
+);
 
 hall.listen(3001);
