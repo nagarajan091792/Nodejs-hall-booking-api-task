@@ -2,7 +2,7 @@ const express = require("express");
 const hall = express();
 hall.use(express.json());
 
-const rooms = [
+const myHall = [
     {
         "roomName": "extra-large",
         "seats": 600,
@@ -40,13 +40,13 @@ const rooms = [
 
 
 hall.get("/all", function (req, res) {
-    res.json(rooms);
+    res.json(myHall);
 });
 
 // creating a room - api
 hall.post("/createroom", function (req, res) {
     try {
-        rooms.push({
+        myHall.push({
             roomName: req.body.roomname,
             seats: req.body.seats,
             amenities: req.body.amenities,
@@ -64,47 +64,64 @@ hall.post("/createroom", function (req, res) {
 
 // booking a room - api
 hall.post("/bookRoom", (req, res) => {
-    for (let i = 0; i <= rooms.length; i++) {
-
-        if (!(rooms[i].roomId == req.body.roomId)) {
-            return res.status(400).send({ error: "Invalid" });
-        } else {
-            let booking = {
+try {
+    let booking = {
                 "customerName": req.body.customerName,
-                "date": new Date(req.body.date),
-                "start": req.body.start,
-                "end": req.body.end,
-                "status": "confirmed"
-            };
-            let result = undefined;
-            rooms[i].bookingDetails.forEach((book) => {
-                if (
-                    book.date.getTime() !== booking.date.getTime() &&
-                    book.start !== booking.start
-                ) {
-                    result = 0;
-                    console.log("in booking");
-                } else {
-                    result = 1;
-                    rooms[i].bookingDetails.push(booking);
-                    // return res.status(200).send("Booking confirmed")
-                }
-            });
-            if (result) return res.status(200).send("Booking confirmed");
-            else
-                return res
-                    .status(400)
-                    .send({ error: "Please select different time slot" });
-        }
-    }
-});
+                 "date": new Date(req.body.date),
+                 "start": req.body.start,
+                 "end": req.body.end,
+                 "status": "confirmed"
+             };
+             bookingDetails.push(booking);
+             res.status(200).json({
+            message: "room booked successfully",
+             });
+} catch (error) {
+    console.log(error);
+}
+})
+
+//     for (let i = 0; i <= rooms.length; i++) {
+
+//         if (!(rooms[i].roomId == req.body.roomId)) {
+//             return res.status(400).send({ error: "Invalid" });
+//         } else {
+//             let booking = {
+//                 "customerName": req.body.customerName,
+//                 "date": new Date(req.body.date),
+//                 "start": req.body.start,
+//                 "end": req.body.end,
+//                 "status": "confirmed"
+//             };
+//             let result = undefined;
+//             rooms[i].bookingDetails.forEach((book) => {
+//                 if (
+//                     book.date.getTime() !== booking.date.getTime() &&
+//                     book.start !== booking.start
+//                 ) {
+//                     result = 0;
+//                     console.log("in booking");
+//                 } else {
+//                     result = 1;
+//                     rooms[i].bookingDetails.push(booking);
+//                     // return res.status(200).send("Booking confirmed")
+//                 }
+//             });
+//             if (result) return res.status(200).send("Booking confirmed");
+//             else
+//                 return res
+//                     .status(400)
+//                     .send({ error: "Please select different time slot" });
+//         }
+//     }
+// });
 
 
 // list all rooms with booked data - api
 hall.get("/listAllRooms", (req, res) => {
     let customerArray = [];
 
-    rooms.forEach((room) => {
+    myHall.forEach((room) => {
         let customerObj = { roomName: room.roomName };
 
         room.bookingDetails.forEach((customer) => {
@@ -125,7 +142,7 @@ hall.get("/listAllRooms", (req, res) => {
 hall.get("/listAllCustomers", (req, res) => {
     let customerArray = [];
 
-    rooms.forEach((room) => {
+    myHall.forEach((room) => {
         let customerObj = { roomName: room.roomName };
 
         room.bookingDetails.forEach((customer) => {
