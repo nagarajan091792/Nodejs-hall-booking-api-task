@@ -140,7 +140,7 @@ hall.get("/listAllCustomers", (req, res) => {
 
     res.send(customerArray);
 });
-as.get("/", (req, res) =>
+hall.get("/", (req, res) =>
   res.send(`Server Active`)
 );
 
