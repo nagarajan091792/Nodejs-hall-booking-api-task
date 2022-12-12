@@ -65,12 +65,19 @@ hall.post("/createRoom", function (req, res) {
 //2. booking a room - api (post) - https://nodejs-hall-booking-api-task.vercel.app/bookRoom
 hall.post("/bookRoom", (req, res) => {
   for (let i=0; i<myHall.length; i++) {
-    if (!(myHall[i].roomId === req.body.roomId)) {
-      return res.status(400).send({ error: "Invalid" });
+    if (!(myHall[0].roomId === req.body.roomId)) {
+      return res.status(400).send({ error: "Invalid Room Id" });
   }}
-  return res.status(200).send({ error: "valid" });
-
-})
+   let booking = {
+    "customerName": req.body.customerName,
+    "date": new Date(req.body.date),
+    "start": req.body.start,
+    "end": req.body.end,
+    "status": "confirmed"
+   }
+   myHall[0].bookingDetails.push(booking)
+   res.status(200).send({ message: "booking Successfully" });
+});
 
 // 3.list all rooms with booked data - api (get) - https://nodejs-hall-booking-api-task.vercel.app/listAllRooms
 hall.get("/listAllRooms", (req, res) => {
