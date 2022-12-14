@@ -13,12 +13,19 @@ const myHall = [
     bookingDetails: [
       {
         customerName: "gopi",
-        date: new Date("2022-11-14"),
-        start: "07:00",
-        end: "10:00",
-        status: "confirmed",
+        date: "2022-11-14",
+        start: "12:00 AM",
+        end: "11:59 PM",
+        status: "confirmed"
       },
-    ],
+      {
+        customerName: "gopiss",
+        date: "2022-11-15",
+        start: "12:00 AM",
+        end: "11:59 PM",
+        status: "confirmed"
+      }
+    ]
   },
   {
     roomName: "large",
@@ -29,103 +36,123 @@ const myHall = [
     bookingDetails: [
       {
         customerName: "rajan",
-        date: new Date("2022-11-15"),
-        start: "15:00",
-        end: "17:00",
-        status: "confirmed",
-      },
-    ],
-  },
+        date: "2022-11-15",
+        start: "12:00 AM",
+        end: "11:59 PM",
+        status: "confirmed"
+      }
+    ]
+  }
 ];
- 
-// list all rooms and customers - api (get) - https://nodejs-hall-booking-api-task.vercel.app/all 
-hall.get("/all", function (req, res) {
-  res.json(myHall);
+
+// list all rooms and customers - api (get) - https://nodejs-hall-booking-api-task.vercel.app/all
+hall.get("/all", (req, res) => {
+  try {
+    res.json(myHall);
+  } catch (error) {
+    console.log(error);
+  }
+
 });
 
-// 1. creating a room - api (post) - https://nodejs-hall-booking-api-task.vercel.app/createRoom 
-hall.post("/createRoom", function (req, res) {
+// 1. creating a room - api (post) - https://nodejs-hall-booking-api-task.vercel.app/createRoom
+hall.post("/createRoom", (req, res) => {
   try {
-    myHall.push({
-      roomName: req.body.roomname,
+    for (let i = 0; i < myHall.length; i++) {
+      if (myHall[i].roomId == req.body.roomId) {
+        return res.status(400).send({ error: "This Room Id already existed" });
+      }
+    }
+    let roomCrate = {
+      roomName: req.body.roomName,
       seats: req.body.seats,
       amenities: req.body.amenities,
       price: req.body.price,
       roomId: req.body.roomId,
-      bookingDetails: [],
-    });
-    res.status(200).json({
-      message: "room created successfully",
-    });
+      bookingDetails: []
+    }
+    myHall.push(roomCrate)
+    res.status(200).json({ message: "Room Created Successfully" });
+  } catch (error) {
+    console.log(error);
+  }
+
+})
+
+//2. booking a room - api (post) - https://nodejs-hall-booking-api-task.vercel.app/bookRoom
+hall.post("/bookRoom", (req, res) => {
+  try {
+    for (let i = 0; i < myHall.length; i++) {
+      if (myHall[i].roomId == req.body.roomId) {
+        myHall[i].bookingDetails.forEach((book) => {
+          if (req.body.date <= book.date) {
+            return res.status(400).send({ error: "Already booked or Invaild Date" });
+          }
+        });
+        let booking = {
+          customerName: req.body.customerName,
+          date: req.body.date,
+          start: "12:00 AM",
+          end: "11:59 PM",
+          status: "confirmed",
+        };
+        res.status(200).json({ message: "Booked Successfully" });
+        myHall[i].bookingDetails.push(booking);
+      }
+    }
+    return res.status(400).send({ error: "Invaild RoomId" });
   } catch (error) {
     console.log(error);
   }
 });
 
-//2. booking a room - api (post) - https://nodejs-hall-booking-api-task.vercel.app/bookRoom
-hall.post("/bookRoom", (req, res) => {
-  for (let i=0; i<myHall.length; i++) {
-    if ((myHall[i].roomId === req.body.roomId)) {
-       console.log(myHall[i].roomId)
-       
-       let booking = {
-        "customerName": req.body.customerName,
-        "date": new Date(req.body.date),
-        "start": req.body.start,
-        "end": req.body.end,
-        "status": "confirmed"
-       }
-        myHall[i].bookingDetails.push(booking)
-        return res.status(200).send({ message: "Booking Successfully" });
-      
-  }}
-   
-    res.status(400).send({ error: "Invaild RoomId" });
-});
-
 // 3.list all rooms with booked data - api (get) - https://nodejs-hall-booking-api-task.vercel.app/listAllRooms
 hall.get("/listAllRooms", (req, res) => {
-  let customerArray = [];
-
-  myHall.forEach((room) => {
-    let customerObj = { roomName: room.roomName };
-
-    room.bookingDetails.forEach((customer) => {
-      customerObj.customerName = customer.customerName;
-      customerObj.status = customer.status;
-      customerObj.date = customer.date;
-      customerObj.start = customer.start;
-      customerObj.end = customer.end;
-
-      customerArray.push(customerObj);
-    });
-  });
-
-  res.send(customerArray);
+  try {
+    let listAllRooms = []
+    for (let i = 0; i < myHall.length; i++) {
+      let roomName = ({ "Roomname and Customers Details" : myHall[i].roomName })
+      listAllRooms.push(roomName)
+      // console.log(listAllRooms)
+      myHall[i].bookingDetails.forEach((bookingDetails) => {
+        let bookingDetail = (bookingDetails)     
+        listAllRooms.push(bookingDetail)
+      })
+    }
+    return res.send(listAllRooms)
+  } catch (error) {
+    console.log(error)
+  }
 });
 
 //4. list all customers with booked data - api (get) - https://nodejs-hall-booking-api-task.vercel.app/listAllCustomers
 hall.get("/listAllCustomers", (req, res) => {
-  let customerArray = [];
+  try {
+    let listAllCustomers = []
+    for (let i = 0; i < myHall.length; i++) {
+      
+      myHall[i].bookingDetails.forEach((bookingDetails) => {
+        let bookingDetail = (bookingDetails)
+        delete (bookingDetails.status)
+        listAllCustomers.push(bookingDetail)
+        let roomName = ({ "Your Room Name is": myHall[i].roomName })
+      listAllCustomers.push(roomName)
+      })
+    }
+    return res.send(listAllCustomers)
+  } catch (error) {
+    console.log(error)
+  }
 
-  myHall.forEach((room) => {
-    let customerObj = { roomName: room.roomName };
-
-    room.bookingDetails.forEach((customer) => {
-      customerObj.customerName = customer.customerName;
-      customerObj.date = customer.date;
-      customerObj.start = customer.start;
-      customerObj.end = customer.end;
-
-      customerArray.push(customerObj);
-    });
-  });
-
-  res.send(customerArray);
 });
 
-
 // Check server or default api (get)- https://nodejs-hall-booking-api-task.vercel.app
-hall.get("/", (req, res) => res.send(`Server Active`));
+hall.get("/", (req, res) => {
+  try {
+    res.send(`Server Active`)
+  } catch (error) {
+    console.log(error)
+  }
+});
 
 hall.listen(process.env.PORT || 3001);
